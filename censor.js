@@ -1,12 +1,12 @@
 const { readFileSync, writeFileSync } = require('fs')
 
-// Bitwarden Version: 2024.8.0 / Server Version: 2024.8.0
+// Bitwarden Version: 2026.3.0 / Server Version: 2026.4.0
 
 const ITEM_TYPES_ENUM = {
     LOGIN: 1,
     NOTE: 2,
     CARD: 3,
-    IDENTITY: 4
+    IDENTITY: 4,
 }
 
 if (process.argv.slice(2).length !== 1) {
@@ -17,12 +17,13 @@ if (process.argv.slice(2).length !== 1) {
 // 1. Parse vault JSON vault export
 
 let vault = undefined
+
 try {
     const vaultContent = readFileSync(process.argv[2], 'utf8')
     try {
         vault = JSON.parse(vaultContent)
     } catch (SyntaxError) {
-        console.log(`File ${process.argv[2]} is not a valid JSON file`)
+        console.log(`Vault export file '${process.argv[2]}' is not a valid JSON file`)
         process.exit(1)
     }
 } catch (FileNotFoundException) {
@@ -58,5 +59,8 @@ vaultItems.forEach((item, index) => {
 
 // 3. Write censored vault export to file
 
-const currentTimestamp = new Date().toISOString().replace(/:/g, '-').replace(/\./g, '-')
-writeFileSync(`./bitwarden_export_censored_${currentTimestamp}.json`, JSON.stringify(vault))
+const currentTimestamp = new Date().toISOString()
+    .replace(/:/g, '-')
+    .replace(/\./g, '-')
+
+writeFileSync(`bitwarden_export_censored_${currentTimestamp}.json`, JSON.stringify(vault))
